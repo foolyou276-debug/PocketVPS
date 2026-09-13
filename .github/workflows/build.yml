@@ -31,6 +31,14 @@ jobs:
           /tmp/gradle/gradle-8.7/bin/gradle wrapper --gradle-version 8.7
           chmod +x gradlew
 
+      - name: Create proguard-rules.pro
+        run: |
+          cat > app/proguard-rules.pro << 'PGEOF'
+          -keep class com.rx.pocketvps.** { *; }
+          -keepattributes *Annotation*
+          -dontwarn okhttp3.**
+          PGEOF
+
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon
 
@@ -45,18 +53,21 @@ jobs:
             -storepass roshan123 \
             -keypass roshan123
 
+      - name: Find apksigner
+        run: find $ANDROID_SDK_ROOT/build-tools -name "apksigner" | sort -r | head -5
+
       - name: Sign APK
         run: |
-          $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign \
+          APKSIGNER=$(find $ANDROID_SDK_ROOT/build-tools -name "apksigner" | sort -r | head -1)
+          echo "Using: $APKSIGNER"
+          $APKSIGNER sign \
             --ks release.keystore \
-            --ks-alias pocketvps \
+            --ks-key-alias pocketvps \
             --ks-pass pass:roshan123 \
             --key-pass pass:roshan123 \
             --out PocketVPS-signed.apk \
             app/build/outputs/apk/release/app-release-unsigned.apk
-
-      - name: Verify APK
-        run: $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify PocketVPS-signed.apk
+          echo "Signed!"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
