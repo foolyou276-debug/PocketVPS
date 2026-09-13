@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Signed APK
 
 on:
   push:
@@ -34,9 +34,33 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon
 
-      - name: Upload APK
+      - name: Generate Keystore
+        run: |
+          keytool -genkey -v \
+            -keystore release.keystore \
+            -alias pocketvps \
+            -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=PocketVPS,OU=R4X,O=R4XGAMEZ,L=IN,ST=IN,C=IN" \
+            -storepass roshan123 \
+            -keypass roshan123
+
+      - name: Sign APK
+        run: |
+          $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign \
+            --ks release.keystore \
+            --ks-alias pocketvps \
+            --ks-pass pass:roshan123 \
+            --key-pass pass:roshan123 \
+            --out PocketVPS-signed.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Verify APK
+        run: $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify PocketVPS-signed.apk
+
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: PocketVPS-release
-          path: app/build/outputs/apk/release/*.apk
+          name: PocketVPS-signed
+          path: PocketVPS-signed.apk
           retention-days: 14
