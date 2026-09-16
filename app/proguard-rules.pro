@@ -1,0 +1,2 @@
+-keep class com.rx.pocketvps.** { *; }
+-keepclassmembers class com.rx.pocketvps.** { *; }
